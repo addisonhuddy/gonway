@@ -10,26 +10,45 @@ type Grid interface {
 }
 
 type grid struct {
-	size        int
-	gridOfCells []Cell
+	cells []Cell
 }
 
-func NewGrid(size int) Grid {
+func NewGrid(size int) *grid {
 	g := new(grid)
-	g.size = size
 
+	// fill the grid with dead cells
 	for i := 0; i < size; i++ {
-		g.gridOfCells = append(g.gridOfCells, NewCell())
+		g.cells = append(g.cells, NewCell())
 	}
 
 	return g
 }
 
-func (g grid) Length() int {
-	return g.size
+func (self *grid) Length() int {
+	return len(self.cells)
 }
 
-func (g grid) GetCell(position int) Cell {
-	cell := g.gridOfCells[position]
+func (self *grid) GetCell(position int) *Cell {
+	cell := &self.cells[position]
 	return cell
+}
+
+func (self *grid) PrintGrid() string {
+
+	var s string
+
+	for index, element := range self.cells {
+
+		if element.IsAlive() == true {
+			s = s + "o"
+		} else {
+			s = s + " "
+		}
+
+		//TODO make this more readable
+		if self.Length()%(index+1) == 0 && index != 0 {
+			s = s + "\n"
+		}
+	}
+	return s
 }

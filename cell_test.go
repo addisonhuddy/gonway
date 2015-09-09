@@ -36,4 +36,5 @@ var _ = Describe("Cell", func() {
 		cell.Kill()
 		Expect(cell.IsAlive()).To(Equal(false))
 	})
+
 })

@@ -2,7 +2,6 @@ package main_test
 
 import (
 	. "github.com/addisonhuddy/gonway"
-
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -16,6 +15,15 @@ var _ = Describe("Grid", func() {
 	It("returns a cell at a given position", func() {
 		grid := NewGrid(9)
 		cell := grid.GetCell(5)
-		Expect(cell.IsAlive()).To(Equal(false))
+		cell.Live()
+		Expect(cell.IsAlive()).To(Equal(true))
+	})
+
+	It("Prints the grid", func() {
+		var grid = NewGrid(4)
+		cell := grid.GetCell(2)
+		cell.Live()
+		expectedGrid := "  \no \n"
+		Expect(grid.PrintGrid()).To(Equal(expectedGrid))
 	})
 })
