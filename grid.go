@@ -61,24 +61,56 @@ func (self *grid) PrintGrid() string {
 func (self *grid) Neighbors(position int) int {
 	count := 0
 
+	//right
 	if self.cells[position+1].IsAlive() && self.FarRight(position) != true {
-		//right
 		count++
 	}
 
+	//left
 	if self.cells[position-1].IsAlive() && self.FarLeft(position) != true {
-		//left
 		count++
 	}
 
-	if self.cells[self.Below(position)].IsAlive() && self.LastRow(position) != true {
-		//down
-		count++
+	//down
+	if self.LastRow(position) != true {
+		if self.cells[self.Below(position)].IsAlive() {
+			count++
+		}
+
+		// bottom right
+		if self.FarRight(position) != true {
+			if self.cells[self.Below(position+1)].IsAlive() {
+				count++
+			}
+		}
+
+		// bottom right
+		if self.FarLeft(position) != true {
+			if self.cells[self.Below(position-1)].IsAlive() {
+				count++
+			}
+		}
 	}
 
-	if self.cells[self.Above(position)].IsAlive() && self.TopRow(position) != true {
-		//up
-		count++
+	//up
+	if self.TopRow(position) != true {
+		if self.cells[self.Above(position)].IsAlive() {
+			count++
+		}
+
+		// upper right
+		if self.FarRight(position) != true {
+			if self.cells[self.Above(position+1)].IsAlive() {
+				count++
+			}
+		}
+
+		//upper left
+		if self.FarLeft(position) != true {
+			if self.cells[self.Above(position-1)].IsAlive() {
+				count++
+			}
+		}
 	}
 
 	return count
