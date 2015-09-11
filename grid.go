@@ -62,30 +62,34 @@ func (self *grid) Neighbors(position int) int {
 	count := 0
 
 	//right
-	if self.cells[position+1].IsAlive() && self.FarRight(position) != true {
-		count++
+	if !self.FarRight(position) {
+		if self.cells[position+1].IsAlive() {
+			count++
+		}
 	}
 
 	//left
-	if self.cells[position-1].IsAlive() && self.FarLeft(position) != true {
-		count++
+	if !self.FarLeft(position) {
+		if self.cells[position-1].IsAlive() {
+			count++
+		}
 	}
 
 	//down
-	if self.LastRow(position) != true {
+	if !self.LastRow(position) {
 		if self.cells[self.Below(position)].IsAlive() {
 			count++
 		}
 
 		// bottom right
-		if self.FarRight(position) != true {
+		if !self.FarRight(position) {
 			if self.cells[self.Below(position+1)].IsAlive() {
 				count++
 			}
 		}
 
-		// bottom right
-		if self.FarLeft(position) != true {
+		// bottom left
+		if !self.FarLeft(position) {
 			if self.cells[self.Below(position-1)].IsAlive() {
 				count++
 			}
@@ -93,26 +97,25 @@ func (self *grid) Neighbors(position int) int {
 	}
 
 	//up
-	if self.TopRow(position) != true {
+	if !self.TopRow(position) {
 		if self.cells[self.Above(position)].IsAlive() {
 			count++
 		}
 
 		// upper right
-		if self.FarRight(position) != true {
+		if !self.FarRight(position) {
 			if self.cells[self.Above(position+1)].IsAlive() {
 				count++
 			}
 		}
 
 		//upper left
-		if self.FarLeft(position) != true {
+		if !self.FarLeft(position) {
 			if self.cells[self.Above(position-1)].IsAlive() {
 				count++
 			}
 		}
 	}
-
 	return count
 }
 
@@ -138,4 +141,29 @@ func (self *grid) FarRight(index int) bool {
 
 func (self *grid) FarLeft(index int) bool {
 	return index%self.size == 0
+}
+
+func (self *grid) Bang() {
+	for i := range self.cells {
+		cell := self.GetCell(i)
+		if self.Neighbors(i) < 2 {
+			cell.Kill()
+		}
+
+		if self.Neighbors(i) == 2 || self.Neighbors(i) == 3 {
+			if cell.IsAlive() {
+				continue
+			}
+		}
+
+		if self.Neighbors(i) > 3 {
+			cell.Kill()
+		}
+
+		if self.Neighbors(i) == 2 {
+			if !cell.IsAlive() {
+				cell.Live()
+			}
+		}
+	}
 }

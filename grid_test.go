@@ -1,6 +1,7 @@
 package main_test
 
 import (
+	//"fmt"
 	. "github.com/addisonhuddy/gonway"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -31,6 +32,7 @@ var _ = Describe("Grid", func() {
 		expectedGrid := "  \no \n"
 		Expect(grid.PrintGrid()).To(Equal(expectedGrid))
 	})
+
 	Describe("Counting the neightbors of a cell", func() {
 		It("Returns the number of neighbors a cell has", func() {
 			var grid = NewGrid(3)
@@ -67,6 +69,62 @@ var _ = Describe("Grid", func() {
 			grid.GetCell(6).Live()
 			grid.GetCell(8).Live()
 			Expect(grid.Neighbors(4)).To(Equal(4))
+		})
+	})
+	Describe("Cells live or die given Conway's Rules", func() {
+		It("Rule 1: Kills a cell that has less than 2 neighbors", func() {
+			var grid = NewGrid(2)
+			grid.GetCell(0).Live()
+			grid.GetCell(3).Live()
+			grid.Bang()
+			Expect(grid.GetCell(0).IsAlive()).To(Equal(false))
+			Expect(grid.GetCell(1).IsAlive()).To(Equal(false))
+		})
+
+		It("Rule #2: Cells with 2 or 3 neighbors live", func() {
+			var grid = NewGrid(3)
+
+			// xxo
+			// xoo
+			// ooo
+			grid.GetCell(0).Live()
+			grid.GetCell(1).Live()
+			grid.GetCell(3).Live()
+			Expect(grid.Neighbors(0)).To(Equal(2))
+			grid.Bang()
+			Expect(grid.Neighbors(0)).To(Equal(2))
+			Expect(grid.GetCell(0).IsAlive()).To(Equal(true))
+		})
+
+		It("Rule #3: Cells with more than 3 neighbors die due to overpopulation", func() {
+			var grid = NewGrid(3)
+
+			// xxx
+			// xxo
+			// ooo
+
+			grid.GetCell(0).Live()
+			grid.GetCell(1).Live()
+			grid.GetCell(2).Live()
+			grid.GetCell(3).Live()
+			grid.GetCell(4).Live()
+			grid.Bang()
+			Expect(grid.GetCell(2).IsAlive()).To(Equal(false))
+		})
+
+		It("Rule #4: Dead cells with exactly 2 neighbors are brought back to life", func() {
+			var grid = NewGrid(3)
+
+			// ooo
+			// xox
+			// ooo
+
+			grid.GetCell(3).Live()
+			grid.GetCell(5).Live()
+			grid.Bang()
+
+			Expect(grid.GetCell(2).IsAlive()).To(Equal(true))
+
 		})
 	})
 })
