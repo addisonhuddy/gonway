@@ -1,7 +1,8 @@
 package main
 
 import (
-//"fmt"
+	"math/rand"
+	"time"
 )
 
 type Grid interface {
@@ -17,6 +18,7 @@ type grid struct {
 }
 
 func NewGrid(size int) *grid {
+	rand.Seed(time.Now().UTC().UnixNano())
 	g := new(grid)
 	g.size = size
 
@@ -26,6 +28,20 @@ func NewGrid(size int) *grid {
 	}
 
 	return g
+}
+
+func CloneGrid(g *grid) *grid {
+	newGrid := new(grid)
+	newGrid.size = g.size
+
+	for i := range g.cells {
+		newGrid.cells = append(newGrid.cells, NewCell())
+		if g.GetCell(i).IsAlive() {
+			newGrid.GetCell(i).Live()
+		}
+	}
+
+	return newGrid
 }
 
 func (self *grid) Size() int {
@@ -43,15 +59,18 @@ func (self *grid) GetCell(position int) *Cell {
 
 func (self *grid) PrintGrid() string {
 	var s string
-	for index, element := range self.cells {
 
-		if element.IsAlive() == true {
+	for i := range self.cells {
+
+		cell := self.GetCell(i)
+
+		if cell.IsAlive() == true {
 			s = s + "o"
 		} else {
 			s = s + " "
 		}
-		//TODO make this more readable
-		if self.NumerOfCells()%(index+1) == 0 && index != 0 {
+
+		if self.FarRight(i) {
 			s = s + "\n"
 		}
 	}
@@ -143,27 +162,56 @@ func (self *grid) FarLeft(index int) bool {
 	return index%self.size == 0
 }
 
-func (self *grid) Bang() {
-	for i := range self.cells {
-		cell := self.GetCell(i)
-		if self.Neighbors(i) < 2 {
+func Bang(grid *grid) *grid {
+
+	tempGrid := CloneGrid(grid)
+
+	for i := range grid.cells {
+		cell := tempGrid.GetCell(i)
+
+		// Rule 1
+		if grid.Neighbors(i) < 2 {
 			cell.Kill()
 		}
 
-		if self.Neighbors(i) == 2 || self.Neighbors(i) == 3 {
+		// Rule 2
+		if grid.Neighbors(i) == 2 || grid.Neighbors(i) == 3 {
 			if cell.IsAlive() {
 				continue
 			}
 		}
 
-		if self.Neighbors(i) > 3 {
+		// Rule 3
+		if grid.Neighbors(i) > 3 {
 			cell.Kill()
 		}
 
-		if self.Neighbors(i) == 2 {
+		// Rule 4
+		if grid.Neighbors(i) == 3 {
 			if !cell.IsAlive() {
 				cell.Live()
 			}
 		}
 	}
+
+	return tempGrid
+}
+
+func (self *grid) Randomize() {
+	for i := range self.cells {
+		randomNumber := randInt(0, 100)
+		print(randomNumber)
+		cell := self.GetCell(i)
+		if randomNumber > 75 {
+			cell.Live()
+		}
+	}
+}
+
+func randInt(min int, max int) int {
+	return min + rand.Intn(max-min)
+}
+
+func ClearScreen() {
+	print("\033[H\033[2J")
 }

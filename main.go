@@ -6,4 +6,6 @@ import (
 
 func main() {
 	fmt.Printf("Loading...")
+	BigBang()
+	fmt.Printf("Ending")
 }

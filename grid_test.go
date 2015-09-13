@@ -73,12 +73,19 @@ var _ = Describe("Grid", func() {
 	})
 	Describe("Cells live or die given Conway's Rules", func() {
 		It("Rule 1: Kills a cell that has less than 2 neighbors", func() {
-			var grid = NewGrid(2)
+			var grid = NewGrid(3)
+
+			//oxx
+			//oxx
+			//oxx
+
 			grid.GetCell(0).Live()
 			grid.GetCell(3).Live()
-			grid.Bang()
+			grid.GetCell(6).Live()
+			grid = Bang(grid)
 			Expect(grid.GetCell(0).IsAlive()).To(Equal(false))
-			Expect(grid.GetCell(1).IsAlive()).To(Equal(false))
+			Expect(grid.GetCell(3).IsAlive()).To(Equal(true))
+			Expect(grid.GetCell(6).IsAlive()).To(Equal(false))
 		})
 
 		It("Rule #2: Cells with 2 or 3 neighbors live", func() {
@@ -90,9 +97,7 @@ var _ = Describe("Grid", func() {
 			grid.GetCell(0).Live()
 			grid.GetCell(1).Live()
 			grid.GetCell(3).Live()
-			Expect(grid.Neighbors(0)).To(Equal(2))
-			grid.Bang()
-			Expect(grid.Neighbors(0)).To(Equal(2))
+			grid = Bang(grid)
 			Expect(grid.GetCell(0).IsAlive()).To(Equal(true))
 		})
 
@@ -108,22 +113,22 @@ var _ = Describe("Grid", func() {
 			grid.GetCell(2).Live()
 			grid.GetCell(3).Live()
 			grid.GetCell(4).Live()
-			grid.Bang()
-			Expect(grid.GetCell(2).IsAlive()).To(Equal(false))
+			grid = Bang(grid)
+			Expect(grid.GetCell(4).IsAlive()).To(Equal(false))
 		})
 
-		It("Rule #4: Dead cells with exactly 2 neighbors are brought back to life", func() {
+		It("Rule #4: Dead cells with exactly 3 neighbors are brought back to life", func() {
 			var grid = NewGrid(3)
 
 			// ooo
-			// xox
+			// xxx
 			// ooo
 
 			grid.GetCell(3).Live()
+			grid.GetCell(4).Live()
 			grid.GetCell(5).Live()
-			grid.Bang()
-
-			Expect(grid.GetCell(2).IsAlive()).To(Equal(true))
+			grid = Bang(grid)
+			Expect(grid.GetCell(1).IsAlive()).To(Equal(true))
 
 		})
 	})
